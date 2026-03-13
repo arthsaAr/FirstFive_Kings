@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as Location from 'expo-location';
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const trainingOptions = ["First Aider", "Paramedic", "Nurse", "Doctor", "Lifeguard", "Other"];
 
@@ -13,6 +14,46 @@ export default function ResponderSetupScreen() {
   const [hasFirstAidKit, setHasFirstAidKit] = useState(false);
   const [hasAED, setHasAED] = useState(false);
   const [locationEnabled, setLocationEnabled] = useState(false);
+
+  //checking location permission status(current)
+  useEffect(() => {
+    checkLocationPermission();
+  }, []);
+
+  const checkLocationPermission = async () => {
+    const { status } = await Location.getForegroundPermissionsAsync();
+    setLocationEnabled(status === 'granted');
+  };
+
+  const handleLocationToggle = async () => {
+    if (locationEnabled) {
+      // If currently enabled, inform user they need to disable in settings
+      Alert.alert(
+        "Location Services",
+        "To disable location services, please go to your device settings.",
+        [{ text: "OK" }]
+      );
+    } else {
+      // Request permission
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status === 'granted') {
+        setLocationEnabled(true);
+        Alert.alert(
+          "Success",
+          "Location services have been enabled.",
+          [{ text: "OK" }]
+        );
+      } else {
+        setLocationEnabled(false);
+        Alert.alert(
+          "Permission Denied",
+          "Location permission is required to help connect you with nearby emergencies. Please enable it in your device settings.",
+          [{ text: "OK" }]
+        );
+      }
+    }
+  };
 
   //Checking if form is valid
   const isFormValid = name.trim() !== "" && trainingLevel !== "" && locationEnabled;
@@ -97,7 +138,7 @@ export default function ResponderSetupScreen() {
       <Text className="text-gray-800 font-semibold text-lg mt-6">Location Services</Text>
       <TouchableOpacity
         className="mt-3 bg-black rounded-2xl px-4 py-4 flex-row items-center justify-between"
-        onPress={() => setLocationEnabled(!locationEnabled)}
+        onPress={handleLocationToggle}
         activeOpacity={0.7}
       >
         <View className="flex-row items-center gap-3">
