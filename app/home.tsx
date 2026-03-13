@@ -1,11 +1,11 @@
 import * as Location from 'expo-location';
 import { useRouter } from "expo-router";
-import { doc, getFirestore, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { db } from '../firebaseConfig';
 
 export default function HomeScreen() {
-  const db = getFirestore();
   const router = useRouter();
   const [locationEnabled, setLocationEnabled] = useState(false);
  

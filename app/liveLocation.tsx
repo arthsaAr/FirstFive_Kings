@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from "react-native";
-import MapView, { Circle, Marker } from "react-native-maps";
+import MapView, { Circle, Marker, Polyline } from "react-native-maps";
 import { db } from '../firebaseConfig';
 
 export default function LiveLocationScreen() {
@@ -15,6 +15,7 @@ export default function LiveLocationScreen() {
   //   longitude: -122.4324,
   // };
   
+  
   const userLocation = {
     latitude: parseFloat(lat as string) || 37.78825,
     longitude: parseFloat(lng as string) || -122.4324,
@@ -24,6 +25,22 @@ export default function LiveLocationScreen() {
     latitude: 37.79025,
     longitude: -122.4354,
   });
+
+   //distance function to get distance between two coordinates and convert to meters
+   //CALCULATION IS TAKEN FROM SOMEONE ELSE
+  const getDistance = () => {
+    const R = 6371000;
+    const dLat = ((responderLocation.latitude - userLocation.latitude) * Math.PI) / 180;
+    const dLng = ((responderLocation.longitude - userLocation.longitude) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos((userLocation.latitude * Math.PI) / 180) *
+      Math.cos((responderLocation.latitude * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+    const meters = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    const minutes = Math.ceil(meters / 80); // avg walking speed ~80m/min
+    return minutes;
+  };
 
   useEffect(() => {
     const locc = onSnapshot(doc(db, 'responders', 'responders1'), (snap) => {
@@ -87,6 +104,12 @@ export default function LiveLocationScreen() {
             >
               <View className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white" />
             </Marker>
+            <Polyline
+              coordinates={[userLocation, responderLocation]}
+              strokeColor="#3b82f6"
+              strokeWidth={3}
+              lineDashPattern={[8, 4]}  // dashed line looks like a path
+            />
           </MapView>
  
 
@@ -126,7 +149,7 @@ export default function LiveLocationScreen() {
             <View className="flex-row items-center mt-2">
               <Ionicons name="time-outline" size={18} color="#6b7280" />
               <Text className="text-gray-700 text-base ml-2 font-semibold">
-                Estimated arrival: <Text className="text-green-600 font-bold">4 mins</Text>
+                Estimated arrival: <Text className="text-green-600 font-bold">{getDistance()} mins</Text>
               </Text>
             </View>
           </View>
