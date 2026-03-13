@@ -36,6 +36,13 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "FirstFive needs your location to alert you of nearby emergencies.",
+          "isAndroidBackgroundLocationEnabled": true
+        }
       ]
     ],
     "experiments": {
