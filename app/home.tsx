@@ -36,7 +36,7 @@ export default function HomeScreen() {
               if (newStatus === 'granted') {
                 setLocationEnabled(true);
                 const location = await Location.getCurrentPositionAsync({
-                  accuracy: Location.Accuracy.Lowest,
+                  accuracy: Location.Accuracy.High,
                   timeInterval: 5000,
                 });
                 await setDoc(doc(db, 'emergencies', 'current'), {

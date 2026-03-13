@@ -2,9 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const GEMINI_API = "AIzaSyCCI-KaU_QoSOeAs953sgvBAK337dHExIo";
+const GEMINI_API = "";  ///add gemini free api key
 // const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API}`;
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API}`;
+// const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API}`;
+// const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API}`;
+
 
 export default function AIChatScreen() {
   const [message, setMessage] = useState("");
@@ -76,6 +79,9 @@ export default function AIChatScreen() {
       const data = await response.json();
       console.log("Response data:", JSON.stringify(data, null, 2));
 
+      if (data.candidates?.[0]?.finishReason === "SAFETY") {
+        return "I'm unable to process that right now. Please call 911 immediately!";
+      }
       if(data.candidates && data.candidates[0]?.content?.parts[0]?.text){
         return data.candidates[0].content.parts[0].text;
       } else {
