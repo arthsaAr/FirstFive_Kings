@@ -9,7 +9,7 @@ import { db } from '../firebaseConfig';
 export default function LiveLocationScreen() {
   const router = useRouter();
 
-  const { lat, lng } = useLocalSearchParams();
+  const { lat, lng, responderId } = useLocalSearchParams();
   const [responderName, setResponderName] = useState("Responder");
   // const userLocation = {
   //   latitude: 37.78825,
@@ -43,18 +43,33 @@ export default function LiveLocationScreen() {
   };
 
   useEffect(() => {
-    const locc = onSnapshot(doc(db, 'responders', 'responder1'), (snap) => {
-      const data = snap.data();
-      if(data){
-        setResponderLocation({
-          latitude: data.lat,
-          longitude: data.lng,
-        });
-        setResponderName(data.name || "Responder");
-      }
-    });
-    return () => locc();
-  }, []);
+    // If responderId is passed (responder's own view), use it directly.
+    // If not (caller's view), read responderDocId from the emergency document.
+    const listenToResponder = (docId: string) => {
+      return onSnapshot(doc(db, 'responders', docId), (snap) => {
+        const data = snap.data();
+        if (data) {
+          setResponderLocation({ latitude: data.lat, longitude: data.lng });
+          setResponderName(data.name || "Responder");
+        }
+      });
+    };
+
+    if (responderId) {
+      const unsub = listenToResponder(responderId as string);
+      return () => unsub();
+    } else {
+      // Caller side: get the responderDocId from the emergency document first
+      const emergencyUnsub = onSnapshot(doc(db, 'emergencies', 'current'), (snap) => {
+        const data = snap.data();
+        if (data?.responderDocId) {
+          emergencyUnsub(); // stop listening once we have it
+          listenToResponder(data.responderDocId);
+        }
+      });
+      return () => emergencyUnsub();
+    }
+  }, [responderId]);
 
   // if (loading) {
   //   return (

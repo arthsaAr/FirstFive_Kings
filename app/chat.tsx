@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const GEMINI_API = "";  ///add gemini free api key
+const GEMINI_API = "AIzaSyChhfAtxbCBG9gKT6fpJi3EjknZrbYXgkA";  ///add gemini free api key
 // const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API}`;
 // const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API}`;
 // const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API}`;
@@ -138,8 +138,8 @@ export default function AIChatScreen() {
   return (
     <KeyboardAvoidingView 
       className="flex-1 bg-white"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      behavior="padding"
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 30}
     >
       {/* Header */}
       <View className="bg-red-500 border-b border-gray-200 px-6 pt-4 pb-3">
@@ -153,6 +153,7 @@ export default function AIChatScreen() {
         className="flex-1 px-5 py-5"
         contentContainerStyle={{ paddingBottom: 15 }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {messages.map((msg) => (
           <View 

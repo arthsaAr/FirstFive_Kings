@@ -43,7 +43,8 @@
           "locationAlwaysAndWhenInUsePermission": "FirstFive needs your location to alert you of nearby emergencies.",
           "isAndroidBackgroundLocationEnabled": true
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,
